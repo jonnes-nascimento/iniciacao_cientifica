@@ -1,0 +1,5 @@
+Teste servidor Jonnes:
+
+mosquitto_pub -h iot.jonnes.eng.br -p 1883 -u jonnes -P 321 -t temperatura -m 27.0
+
+mosquitto_sub -h iot.jonnes.eng.br -p 1883 -u jonnes -P 321 -t temperatura

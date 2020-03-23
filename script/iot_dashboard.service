@@ -1,0 +1,10 @@
+[Unit]
+Description=Jonnes IoT Dashboard
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/var/local/iot_dashboard_python_mongo_service.sh
+
+[Install]
+WantedBy=multi-user.target

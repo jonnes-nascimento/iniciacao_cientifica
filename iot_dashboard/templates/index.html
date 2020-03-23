@@ -1,0 +1,279 @@
+{% extends "template.html" %}
+
+{% block conteudo %}
+
+	<h1>Temperature</h1>
+
+<h6>{{ temp_title }}</h6>
+
+	<div class="container">
+	    <div class="row">
+	        <div class="col-xs-6">
+	<div class="table-responsive">
+	    <table  class="table table-striped table-bordered table-hover table-sm">
+	        <thead class="thead-dark">
+	            <tr>
+	            	<th scope="col">Date</th>
+	                <th scope="col">Payload</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            {% for topic in temp_list %}
+	                <tr>
+	                    <td>{{ topic.datetime }}</td>
+	                    <td>{{ topic.payload }}</td>
+	                </tr>
+	        	{% endfor %}
+	        </tbody>
+	    </table>
+	</div>
+	        </div>
+	        <div class="p-5 col-xs-6">
+    <canvas id="myChart" width="600" height="400"></canvas>
+    <p id="pointSelected">Point selected:</p>
+	
+	        </div>
+	    </div>
+	</div>
+
+	
+	
+
+    <script>
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      var timeFormat = 'HH:mm:ss';
+
+      function newDateString(hours, minutes, seconds) {
+		    return moment().hour(hours).minute(minutes).second(seconds).format(timeFormat);
+	     }
+
+      // define the chart data
+      var chartData = {
+        labels : [{% for item in temp_labels %}
+                   newDateString( {{item.hour}}, {{item.minute}}, {{item.second}} ),
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ temp_legend }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(136, 255, 0, 0.4)",
+            borderColor: "rgba(136, 255, 0, 1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            borderWidth: 1,
+            pointBorderColor: "rgba(136, 255, 0, 1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(136, 255, 0, 1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 0.5,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for item in temp_values %}
+                      {{item}},
+                    {% endfor %}],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var holder = document.getElementById("myChart");
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create a callback function for updating the caption
+      var original = Chart.defaults.global.legend.onClick;
+      Chart.defaults.global.legend.onClick = function(e, legendItem) {
+        update_caption(legendItem);
+        original.call(this, e, legendItem);
+      };
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          tooltips: {
+            enabled: true,
+            mode: 'single',
+            callbacks: {
+              label: function(tooltipItems, data) {
+                       firstPointCtx = "First Point Selected: (2:20PM, 72.3 degrees)";
+                       return tooltipItems.yLabel + ' degrees';
+                     }
+            }
+          },
+          scales: {
+	        yAxes: [{
+	            display: true,
+	            ticks: {
+	                suggestedMin: 15,
+	                suggestedMax: 35,
+	            }
+	        }]
+	      }
+        }
+      });
+
+      // get the text element below the chart
+      var pointSelected = document.getElementById("pointSelected");
+
+      // create a callback function for updating the selected index on the chart
+      holder.onclick = function(evt){
+        var activePoint = myChart.getElementAtEvent(evt);
+        console.log(activePoint);
+        console.log('x:' + activePoint[0]._view.x);
+        console.log('maxWidth: ' + activePoint[0]._xScale.maxWidth);
+        console.log('y: ' + activePoint[0]._view.y);
+        console.log('index: ' + activePoint[0]._index);
+        pointSelected.innerHTML = 'Point selected... index: ' + activePoint[0]._index;
+      };
+    </script>
+
+    <hr />
+
+    <h1>Moisture</h1>
+
+    <h6>{{ moist_title }}</h6>
+
+    <div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+    <div class="table-responsive">
+	    <table class="table table-striped table-bordered table-hover table-sm">
+	        <thead class="thead-dark">
+	            <tr>
+	            	<th>Date</th>
+	                <th>Payload</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            {% for topic in moist_list %}
+	                <tr>
+	                    <td>{{ topic.datetime }}</td>
+	                    <td>{{ topic.payload }}</td>
+	                </tr>
+	        	{% endfor %}
+	        </tbody>
+	    </table>
+	</div>
+        </div>
+        <div class="p-5 col-xs-6">
+    <!-- bar chart canvas element -->
+    <canvas id="myChart2" width="600" height="400"></canvas>
+    <p id="pointSelected2">Point selected:</p>
+
+    
+        </div>
+    </div>
+</div>
+
+     
+
+    <script>
+      // Global parameters:
+      // do not resize the chart canvas when its container does (keep at 600x400px)
+      Chart.defaults.global.responsive = false;
+
+      var timeFormat = 'HH:mm:ss';
+
+      function newDateString(hours, minutes, seconds) {
+		    return moment().hour(hours).minute(minutes).second(seconds).format(timeFormat);
+	     }
+
+      // define the chart data
+      var chartData = {
+        labels : [{% for item in moist_labels %}
+                   newDateString( {{item.hour}}, {{item.minute}}, {{item.second}} ),
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ moist_legend }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(255, 191, 0, 0.4)",
+            borderColor: "rgba(255, 191, 0, 1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            borderWidth: 1,
+            pointBorderColor: "rgba(255, 191, 0, 1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 0.5,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(255, 191, 0, 1)",
+            pointHoverBorderColor: "rgba(255, 191, 0, 1)",
+            pointHoverBorderWidth: 0.5,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for item in moist_values %}
+                      {{item}},
+                    {% endfor %}],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var holder = document.getElementById("myChart2");
+      var ctx = document.getElementById("myChart2").getContext("2d");
+
+      // create a callback function for updating the caption
+      var original = Chart.defaults.global.legend.onClick;
+      Chart.defaults.global.legend.onClick = function(e, legendItem) {
+        update_caption(legendItem);
+        original.call(this, e, legendItem);
+      };
+
+      // create the chart using the chart canvas
+      var myChart2 = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          tooltips: {
+            enabled: true,
+            mode: 'single',
+            callbacks: {
+              label: function(tooltipItems, data) {
+                       firstPointCtx = "First Point Selected: (2:20PM, 72.3 %)";
+                       return tooltipItems.yLabel + ' %';
+                     }
+            }
+          },
+          scales: {
+	        yAxes: [{
+	            display: true,
+	            ticks: {
+	                suggestedMin: 75,
+	                suggestedMax: 100,
+	            }
+	        }]
+	      }
+        }
+      });
+
+      // get the text element below the chart
+      var pointSelected2 = document.getElementById("pointSelected2");
+
+      // create a callback function for updating the selected index on the chart
+      holder.onclick = function(evt){
+        var activePoint = myChart2.getElementAtEvent(evt);
+        console.log(activePoint);
+        console.log('x:' + activePoint[0]._view.x);
+        console.log('maxWidth: ' + activePoint[0]._xScale.maxWidth);
+        console.log('y: ' + activePoint[0]._view.y);
+        console.log('index: ' + activePoint[0]._index);
+        pointSelected2.innerHTML = 'Point selected: x:' + activePoint[0]._view.x + 'y: ' + activePoint[0]._view.y;
+      };
+    </script>
+
+    <hr />
+
+    <h5>Developed by Jonnes Nascimento - 2019</h5>
+
+    <br />
+{% endblock %}

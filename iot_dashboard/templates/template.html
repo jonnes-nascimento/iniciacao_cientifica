@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="150000000">
+    <title>Jonnes' IoT Server</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src='static/Chart.min.js'></script>
+    <script src="//code.iconify.design/1/1.0.0-rc2/iconify.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            
+                <ul id="messages" class="list-unstyled">
+                    
+                {% for message in messages %}
+                    <li class="alert alert-success">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+                
+        <br />
+
+        <div class="page-header">
+            <h1><span class="iconify" data-icon="octicon-cloud-upload"></span> {{ titulo }}</h1>
+        </div>
+        
+        <hr/>
+        
+        {% block conteudo %}
+        {% endblock %}
+    </div>
+  </body>
+</html>
